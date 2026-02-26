@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Statistik Pemberitaan Kontak Banten</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+  font-family:Arial;
+  background:#f4f6f9;
+  padding:30px;
+}
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+h2{
+  text-align:center;
+  color:#d60000;
+}
+</style>
+</head>
+<body>
+
+<h2>📊 Statistik Pemberitaan Kontak Banten</h2>
+
+<div class="card">
+  <canvas id="chartKategori"></canvas>
+</div>
+
+<script>
+const feedURL = "https://kontakbanten.blogspot.com/feeds/posts/default?alt=json";
+
+fetch(feedURL)
+.then(res => res.json())
+.then(data => {
+
+  const posts = data.feed.entry;
+  let kategoriCount = {};
+
+  posts.forEach(post => {
+    if(post.category){
+      post.category.forEach(cat => {
+        let label = cat.term;
+        kategoriCount[label] = (kategoriCount[label] || 0) + 1;
+      });
+    }
+  });
+
+  const labels = Object.keys(kategoriCount);
+  const values = Object.values(kategoriCount);
+
+  new Chart(document.getElementById('chartKategori'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Jumlah Berita',
+        data: values
+      }]
+    }
+  });
+
+})
+.catch(error=>{
+  document.body.innerHTML += "<p style='color:red'>Gagal mengambil data. Periksa domain blogspot asli.</p>";
+});
+</script>
+
+</body>
+</html>
